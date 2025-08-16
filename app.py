@@ -1,64 +1,34 @@
 import os
 from aiohttp import web
-from botbuilder.core import (
-    BotFrameworkAdapter,
-    BotFrameworkAdapterSettings,
-    TurnContext,
-    ActivityHandler,
-)
-from botbuilder.schema import Activity
+from botbuilder.core import BotFrameworkAdapter, BotFrameworkAdapterSettings, TurnContext, ActivityHandler
 
-# -----------------------------
-# Adapter settings from env vars
-# -----------------------------
+# 👇 Pulling credentials from environment variables
 APP_ID = os.environ.get("MicrosoftAppId", "")
 APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
+
+# 👇 Bot Framework adapter needs these to authenticate
 adapter_settings = BotFrameworkAdapterSettings(APP_ID, APP_PASSWORD)
 adapter = BotFrameworkAdapter(adapter_settings)
 
-# -----------------------------
 # Error handler
-# -----------------------------
 async def on_error(context: TurnContext, error: Exception):
     print(f"Error: {error}")
     await context.send_activity("Oops! Something went wrong.")
-
 adapter.on_turn_error = on_error
 
-# -----------------------------
-# Echo bot
-# -----------------------------
+# Echo bot logic
 class EchoBot(ActivityHandler):
     async def on_message_activity(self, turn_context: TurnContext):
         await turn_context.send_activity(f"You said: {turn_context.activity.text}")
 
 bot = EchoBot()
 
-# -----------------------------
-# AIOHTTP web server
-# -----------------------------
+# Messages endpoint
 async def messages(req):
-    try:
-        body = await req.json()
-        activity = Activity().deserialize(body)
-        auth_header = req.headers.get("Authorization", "")
-        # Process activity
-        await adapter.process_activity(activity, auth_header, bot.on_turn)
-        return web.Response(status=200)
-    except Exception as e:
-        print(f"Exception in messages endpoint: {e}")
-        return web.Response(status=500, text=str(e))
+    body = await req.json()
+    response = web.Response()
+    await adapter.process_activity(body, req.headers, bot.on_turn)  # 👈 Uses App ID / Password for auth
+    return response
 
 app = web.Application()
 app.router.add_post("/api/messages", messages)
-app.router.add_get("/", lambda req: web.Response(text="Echo bot is running"))
-
-# Handle favicon requests to avoid 500 errors in browser
-async def favicon(req):
-    return web.Response(status=204)  # 204 = No Content
-
-app.router.add_get("/favicon.ico", favicon)
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 3978))
-    web.run_app(app, port=port)
