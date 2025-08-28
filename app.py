@@ -12,9 +12,9 @@ import traceback
 # -----------------------------
 # Adapter settings from env vars
 # -----------------------------
-APP_ID = "" # os.environ.get("MicrosoftAppId", "")
-APP_PASSWORD = "" # os.environ.get("MicrosoftAppPassword", "")
-APP_TENANT_ID = "" # os.environ.get("MicrosoftAppTenantId", "")
+APP_ID = os.environ.get("MicrosoftAppId", "")
+APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
+APP_TENANT_ID = os.environ.get("MicrosoftAppTenantId", "")
 print(f"DEBUG: MicrosoftAppId={APP_ID}")
 print(f"DEBUG: MicrosoftAppPassword={'SET' if APP_PASSWORD else 'NOT SET'}")
 
