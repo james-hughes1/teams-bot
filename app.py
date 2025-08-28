@@ -12,13 +12,13 @@ import traceback
 # -----------------------------
 # Adapter settings from env vars
 # -----------------------------
-# APP_ID = os.environ.get("MicrosoftAppId", "")
-# APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
-# APP_TENANT_ID = os.environ.get("MicrosoftAppTenantId", "")
-# print(f"DEBUG: MicrosoftAppId={APP_ID}")
-# print(f"DEBUG: MicrosoftAppPassword={'SET' if APP_PASSWORD else 'NOT SET'}")
+APP_ID = os.environ.get("MicrosoftAppId", "")
+APP_PASSWORD = os.environ.get("MicrosoftAppPassword", "")
+APP_TENANT_ID = os.environ.get("MicrosoftAppTenantId", "")
+print(f"DEBUG: MicrosoftAppId={APP_ID}")
+print(f"DEBUG: MicrosoftAppPassword={'SET' if APP_PASSWORD else 'NOT SET'}")
 
-adapter_settings = BotFrameworkAdapterSettings(APP_ID, APP_PASSWORD)
+adapter_settings = BotFrameworkAdapterSettings(APP_ID, APP_PASSWORD, APP_TENANT_ID)
 adapter = BotFrameworkAdapter(adapter_settings)
 
 # -----------------------------
